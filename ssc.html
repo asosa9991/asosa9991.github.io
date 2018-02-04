@@ -1,0 +1,134 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stock Sell Calculator</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    $(function () {
+
+      $("#slider").slider({
+        range: "min",
+        step: 0.01,
+        min: 1,
+        max: 10,
+        slide: function (event, ui) {
+          $("#price").val(ui.value.toFixed(2));
+          update(ui.value.toFixed(2), parseFloat($("#stocks").val()));
+        }
+      });
+
+      $("#profit-slider").slider({
+        range: "min",
+        step: 0.05,
+        min: .05,
+        max: 1,
+        slide: function (event, ui) {
+          $("#profit").text(ui.value.toFixed(2) * $("#stocks").val());
+          $("#up").text(ui.value.toFixed(2));
+          var up = parseFloat(ui.value);
+          var price = parseFloat($("#price").val());
+          var salePrice = up + price;
+          $("#salePrice").text(salePrice.toFixed(2));
+
+        }
+      });
+
+      $('#price').on("input", function () {
+        var price = parseFloat($("#price").val());
+        var stocks = parseFloat($("#stocks").val());
+        update(price, stocks);
+      });
+
+      $('#stocks').on("input", function () {
+        var price = parseFloat($("#price").val());
+        var stocks = parseFloat($("#stocks").val());
+        update(price, stocks);
+      });
+
+
+      $("#setvalue").on("click", function () {
+        var price = parseFloat($("#price").val());
+        var stocks = parseFloat($("#stocks").val());
+        update(price, stocks);
+      });
+
+      $("button").button();
+    });
+
+    function update(priceVal, stocks) {
+      var price = parseFloat(priceVal);
+      $("#totalVal").text(stocks * price);
+      var up = $("#up").val();
+      // console.log("from up text"+up);
+      if(!up){
+        up = 0.10;
+      }
+      // console.log("up*****"+up);
+      $("#profit").text(stocks * up);
+      $("#salePrice").text((price + up).toFixed(2));
+
+    }
+  </script>
+</head>
+
+<body>
+  <div class="jumbotron text-center">
+    <h1>Stock Sell Calculator</h1>
+    <p>Calculate your sell price and profit</p>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4">
+          <div class="form-group">
+              <h2>Number of Stocks</h2>
+          <input class="form-control" id="stocks" type="text">
+        </div>
+        <div class="form-group">
+          <h2>Buy Price</h2>
+          <input class="form-control" id="price" type="text">
+        </div>
+        <div class="form-group">
+            <div id="slider"></div>              
+        </div>
+        <div class="form-group">
+          <button id="setvalue" class="btn btn-lg btn-success">Crunch Numbers</button>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div>
+          <h2>Total Cost</h2>
+          <p class="lead" id="totalVal"></p>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        
+        <div class="form-group">
+            <h2>Up</h2>
+            <p class="lead" id="up">0.10</p>
+          </div>
+        <div class="form-group">
+            <div id="profit-slider"></div>              
+        </div>
+        <div class="form-group">
+          <h2>Sale Price</h2>
+          <p class="lead" id="salePrice"></p>
+        </div>
+        <div class="form-group">
+            <h2>Profit</h2>
+            <p class="lead" id="profit"></p>
+          </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
