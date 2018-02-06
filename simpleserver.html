@@ -1,0 +1,42 @@
+<p>Recently I had a need to create a HTTPS server to support a webhook POC implementation but I ended up searching a 
+ot to finally put together a solution. I am hoping that this story would solve that. Lets jump in. 
+This server will be using NodeJs runtime and we will be using express, https and fs middleware/modules. 
+Before we do anything else, we first need to create the main component of the HTTPS server — the SSL certificate. 
+Most of the time when setting up a HTTPS server, the devops would use the standard key/cert issued by a valid CA 
+and follow the internal security sop to install. 
+But if we are doing a POC or trying to setup one locally, those certs are generally not available.
+
+So the first setup would be to create a SSL cert. I don’t want to lay out all the details on how to 
+create a cert here as there is already on very well documented by HEROKU team using openssl that 
+I was able to use and create a ssl cert. https://devcenter.heroku.com/articles/ssl-certificate-self
+</p>
+
+<code>
+
+openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
+openssl rsa -passin pass:x -in server.pass.key -out server.key
+rm server.pass.key
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+
+</code>
+<p>
+Once we have created the SSL cert and have the key & the crt files, we will now create a simple Node app using the 
+express middleware and the https & fs modules as below —
+
+</p>
+
+<code>
+var express = require(‘express’),
+ app = express(),
+ https = require(‘https’),
+ fs = require(‘fs’),
+ options = {
+ cert: fs.readFileSync(‘./server.crt’),
+ key: fs.readFileSync(‘./server.key’)
+ };
+app.post(‘/webhook’, function (req, res) {
+ console.log(req.body);
+ res.send(‘ok’);
+});
+</code>
